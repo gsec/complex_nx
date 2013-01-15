@@ -13,42 +13,42 @@ import networkx as nx
 import random as rd
 import matplotlib.pyplot as plt
 
-def generate_graph(gamma,kmin,kmax,dk):
-	rnd = np.random.random(graph_size)
-	C = (-gamma+1) / ((kmax+dk)**(-gamma+1) - (kmin+dk)**(-gamma+1))
-	k = (((-gamma+1)/C)*rnd+(kmin+dk)**(-gamma+1))**(1/(-gamma+1))-dk
-	sequence=map(int,sorted(np.round(k)))
-	if np.mod(np.sum(sequence),2)!=0:
-		sequence[-1]-=1
-	#print(sequence,np.sum(sequence))
-	G = nx.configuration_model(sequence,Graph)
-    # G = nx.random_degree_sequence_graph(sequence)
-	G.remove_edges_from(G.selfloop_edges())
-	return G
+def generate_graph(gamma, kmin, kmax, dk):
+    rnd = np.random.random(graph_size)
+        # map probability to power law:
+    C = (-gamma+1) / ((kmax+dk)**(-gamma+1) - (kmin+dk)**(-gamma+1))
+    k = ( (-gamma+1)/C * rnd + (kmin+dk)**(-gamma + 1))**(1/(-gamma + 1)) - dk
+    sequence = map(int, sorted(np.round(k)))    # map sorted intervalls to int
+    if np.mod(np.sum(sequence), 2) != 0:        # if odd
+        sequence[-1]-=1                         # get rid of last element
+    G = nx.configuration_model(sequence)        # generate random graph
+    G.remove_edges_from(G.selfloop_edges())     # remove self loops
+    G = nx.Graph(G)               # generates ordinary graphs without parallel
+                                  # edges but introduces error
+    return G
 
 def plot_graph():
-	nx.draw(G)
-	show()
-	return
+    nx.draw(G)
+    show()
 
 def random_kill_a_node(number):
-	kill_list=rd.sample(range(0,G.number_of_nodes()-1),number)
-	# kill_list=np.random.random_integers(0,G.number_of_nodes()-1,number)
-	rem_nodes=G.nodes()	
-	tmp=np.array([])
-	for i in range(len(kill_list)):
-		tmp=np.append(tmp,rem_nodes[kill_list[i]])
-	G.remove_nodes_from(tmp)
+    kill_list = rd.sample(range(0, G.number_of_nodes() - 1), number)
+    # kill_list=np.random.random_integers(0,G.number_of_nodes()-1,number)
+    rem_nodes=G.nodes() 
+    tmp=np.array([])
+    for i in range(len(kill_list)):
+        tmp=np.append(tmp,rem_nodes[kill_list[i]])
+    G.remove_nodes_from(tmp)
 
 # def hub_kill_a_node(number):
-	# kill_list=G.number_of_edges()[:number] #rd.sample(range(0,G.number_of_nodes()-1),number)
-	# rem_nodes=G.nodes()	
-	# tmp=np.array([])
-	# for i in range(len(kill_list)):
-		# tmp=np.append(tmp,rem_nodes[kill_list[i]])
-	# G.remove_nodes_from(tmp)
-	
-# --- main ---	
+    # kill_list=G.number_of_edges()[:number] #rd.sample(range(0,G.number_of_nodes()-1),number)
+    # rem_nodes=G.nodes()   
+    # tmp=np.array([])
+    # for i in range(len(kill_list)):
+        # tmp=np.append(tmp,rem_nodes[kill_list[i]])
+    # G.remove_nodes_from(tmp)
+    
+# --- main ---  
 graph_size=10000
 gamma=2.5
 kmin=1.0
@@ -65,13 +65,13 @@ Gcc=Gcc0
 
 
 while Gcc/Gcc0 > 0.01:
-	random_kill_a_node(killstep)
-	killed+=killstep
-	Gcc=len(nx.connected_components(G)[0])*1.0
-	x=np.append(x,killed/graph_size)
-	y=np.append(y,Gcc/Gcc0)
-	print(killed/graph_size)
-# print(x)	
+    random_kill_a_node(killstep)
+    killed+=killstep
+    Gcc=len(nx.connected_components(G)[0])*1.0
+    x=np.append(x,killed/graph_size)
+    y=np.append(y,Gcc/Gcc0)
+    print(killed/graph_size)
+# print(x)  
 # print(y)
 
 
@@ -99,28 +99,28 @@ plt.show()
 
 # i=0
 # for k in kv:
-	# p=k/N
-	# G=nx.fast_gnp_random_graph(N,p)
-	# Gcc=nx.connected_components(G)
-	# S[i]=len(Gcc[0])*1.0/N
-	# s[i]=(N-len(Gcc[0]))*1.0/(len(Gcc)-1)	
-	# i=i+1
-	# print(i)
+    # p=k/N
+    # G=nx.fast_gnp_random_graph(N,p)
+    # Gcc=nx.connected_components(G)
+    # S[i]=len(Gcc[0])*1.0/N
+    # s[i]=(N-len(Gcc[0]))*1.0/(len(Gcc)-1) 
+    # i=i+1
+    # print(i)
 
 # sp=1/(1-kv+kv*S)
 # logS=log(S)
 # logk=log(kv-1)
 
-# # --- fit	
-# fitfunc = lambda p, x: p[0]+p[1]*x	
+# # --- fit 
+# fitfunc = lambda p, x: p[0]+p[1]*x    
 # def residuals(p, y, x):
-	# err = y-fitfunc(p,x)
-	# return err
-# p0 = [1,1]	
+    # err = y-fitfunc(p,x)
+    # return err
+# p0 = [1,1]    
 # p1, success = optimize.leastsq(residuals, p0[:], args=(logS, logk))
 # print(logS,logk)
-	
-# # --- plot	
+    
+# # --- plot    
 # fig=plt.figure()
 # legend(loc=2)
 # ax=fig.add_subplot(111)
@@ -145,4 +145,4 @@ plt.show()
 # ax.plot(logk,fitfunc(p1,logk),color='green',label='fitfunc')
 # ax.plot(logk,logS,color='blue',label='logS')
 # print(p1)
-# show()	
+# show()    
