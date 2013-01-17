@@ -5,12 +5,22 @@ import networkx as nx
 import random as rd
 import matplotlib.pyplot as plt
 import copy
+from pylab import *
 
 
+def generate_graph(N,k):
+	G = nx.random_regular_graph(k,N,seed=None)
+	return G
 
+	
+def return_sequence(N,G,binary_v):
+	v_return=[None]*N
 
-
-
+	for i in range(0,N):
+		node = i
+		neighbor = G.neighbors(node)
+		v_return[i] = evolution_table_k3(Table,i,binary_v[neigbor[0]],binary_v[neigbor[1]],binary_v[neigbor[2]])
+		
 
 
 
