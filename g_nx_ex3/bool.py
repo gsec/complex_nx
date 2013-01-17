@@ -5,8 +5,13 @@ import networkx as nx
 import random as rd
 import matplotlib.pyplot as plt
 import copy
+from pylab import *
+import pydot
 
+N = 10     #number of nodes
+k = 2           # number of connections
 
+<<<<<<< HEAD
 def generate_evolution_table(N,k):
 	return np.random.random_integers(0,10, size=(N,2**k))
 	
@@ -37,6 +42,34 @@ def bin_to_int(N,v):
 	for i in range(0,N):
 		n=n+2**i*v[i]
 	return n	
+=======
+
+
+
+def plot_graph(graph):
+    nx.draw(graph)
+    show()
+
+>>>>>>> 812813bceb51f5c23e4a8c58acb96c3688e26513
+
+
+state_space = nx.DiGraph()
+
+for i in range(N):
+    state_space.add_node(i)
+
+state_space_conn=np.array(())
+for i in range(2**N):
+    state_space_conn=np.append(state_space_conn, 
+                               np.random.randint(0, 2**N))
+
+for i in range(len(state_space_conn)):
+    state_space.add_edge(i,int(state_space_conn[i]))
+
+graph = nx.to_pydot(state_space)
+graph.write_png('test1.png')
+
+#plot_graph(state_space)
 
 
 
