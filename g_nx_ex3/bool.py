@@ -7,10 +7,36 @@ import matplotlib.pyplot as plt
 import copy
 
 
+def generate_evolution_table(N,k):
+	return np.random.random_integers(0,10, size=(N,2**k))
+	
+def evolution_table_k3(Table,i,E1,E2,E3):
+	return Table[i][4*E1+2*E2+E3] 
+	
+def evolution_table_k2(Table,i,E1,E2):
+	return Table[i][2*E1+E2] 
+	
+# table=generate_evolution_table(N,k)
 
-
-
-
+def int_to_bin(N,n):
+	# v=np.array([])
+	# tmp=n%2**(i+1)
+	# v=np.append(v,tmp)
+	# n-=tmp*2**i	
+	v=[None]*N
+	for i in range(0,N):
+		if n>=(2**(N-i-1)):
+			v[N-i-1]=1
+			n=n-2**(N-i-1)
+		else:
+			v[N-i-1]=0	
+	return v
+	
+def bin_to_int(N,v):
+	n=0
+	for i in range(0,N):
+		n=n+2**i*v[i]
+	return n	
 
 
 
