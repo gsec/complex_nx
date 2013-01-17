@@ -6,11 +6,15 @@ import random as rd
 import matplotlib.pyplot as plt
 import copy
 from pylab import *
+<<<<<<< HEAD
+=======
 import pydot
+>>>>>>> 812813bceb51f5c23e4a8c58acb96c3688e26513
 
 N = 10     #number of nodes
 k = 2           # number of connections
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def generate_evolution_table(N,k):
 	return np.random.random_integers(0,10, size=(N,2**k))
@@ -43,8 +47,23 @@ def bin_to_int(N,v):
 		n=n+2**i*v[i]
 	return n	
 =======
+=======
+def generate_graph(N,k):
+	G = nx.random_regular_graph(k,N,seed=None)
+	return G
+>>>>>>> refs/remotes/origin/master
 
+	
+def return_sequence(N,G,binary_v):
+	v_return=[None]*N
 
+<<<<<<< HEAD
+	for i in range(0,N):
+		node = i
+		neighbor = G.neighbors(node)
+		v_return[i] = evolution_table_k3(Table,i,binary_v[neigbor[0]],binary_v[neigbor[1]],binary_v[neigbor[2]])
+		
+=======
 
 def plot_graph(graph):
     nx.draw(graph)
@@ -52,6 +71,7 @@ def plot_graph(graph):
 
 >>>>>>> 812813bceb51f5c23e4a8c58acb96c3688e26513
 
+>>>>>>> 812813bceb51f5c23e4a8c58acb96c3688e26513
 
 state_space = nx.DiGraph()
 
