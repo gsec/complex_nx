@@ -6,85 +6,83 @@ import random as rd
 import matplotlib.pyplot as plt
 import copy
 from pylab import *
-<<<<<<< HEAD
-=======
 import pydot
->>>>>>> 812813bceb51f5c23e4a8c58acb96c3688e26513
 
 N = 10     #number of nodes
 k = 2           # number of connections
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-def generate_evolution_table(N,k):
-	return np.random.random_integers(0,10, size=(N,2**k))
-	
-def evolution_table_k3(Table,i,E1,E2,E3):
-	return Table[i][4*E1+2*E2+E3] 
-	
-def evolution_table_k2(Table,i,E1,E2):
-	return Table[i][2*E1+E2] 
-	
+# N x 2**k dimensional array of random outputs
+# first index: node
+# second index: output; index encodes binary input configuration
+def generate_evolution_table():
+    return np.random.random_integers(0,1, size=(N,2**k))
+
+# get output of node i with input configuration e_v from table above
+def evolution_table(Table,i,e_v):
+    return Table[i][bin_to_int(k,e_v)]
+
+#def evolution_table_k3(Table,i,E1,E2,E3):
+#   return Table[i][4*E1+2*E2+E3] 
+#   
+#def evolution_table_k2(Table,i,E1,E2):
+#   return Table[i][2*E1+E2] 
+    
 # table=generate_evolution_table(N,k)
 
-def int_to_bin(N,n):
-	# v=np.array([])
-	# tmp=n%2**(i+1)
-	# v=np.append(v,tmp)
-	# n-=tmp*2**i	
-	v=[None]*N
-	for i in range(0,N):
-		if n>=(2**(N-i-1)):
-			v[N-i-1]=1
-			n=n-2**(N-i-1)
-		else:
-			v[N-i-1]=0	
-	return v
-	
-def bin_to_int(N,v):
-	n=0
-	for i in range(0,N):
-		n=n+2**i*v[i]
-	return n	
-=======
-=======
-def generate_graph(N,k):
-	G = nx.random_regular_graph(k,N,seed=None)
-	return G
->>>>>>> refs/remotes/origin/master
+#transform integer to binary-array
+def int_to_bin(size,n):
+    # v=np.array([])
+    # tmp=n%2**(i+1)
+    # v=np.append(v,tmp)
+    # n-=tmp*2**i   
+    v=[None]*size
+    for i in range(0,size):
+        if n>=(2**(size-i-1)):
+            v[size-i-1]=1
+            n=n-2**(size-i-1)
+        else:
+            v[size-i-1]=0   
+    return v
+    
+#transform binary-array to integer
+def bin_to_int(size,v):
+    n=0
+    for i in range(0,size):
+        n=n+2**i*v[i]
+    return n    
 
-	
-def return_sequence(N,G,binary_v):
-	v_return=[None]*N
-
-<<<<<<< HEAD
-	for i in range(0,N):
-		node = i
-		neighbor = G.neighbors(node)
-		v_return[i] = evolution_table_k3(Table,i,binary_v[neigbor[0]],binary_v[neigbor[1]],binary_v[neigbor[2]])
-		
-=======
+    
+def return_sequence(graph,curr_state,Table):
+    v_return=[None]*N
+    for node in range(N):
+        neighbor = graph.neighbors(node)
+        neighbor_state=np.array(())
+        for j in range(k):
+            neighbor_state=np.append(neighbor_state,curr_state[neighbor[j]])
+        v_return[node] = evolution_table(Table,node,neighbor_state)
+    return v_return
 
 def plot_graph(graph):
     nx.draw(graph)
     show()
 
->>>>>>> 812813bceb51f5c23e4a8c58acb96c3688e26513
+G = nx.random_regular_graph(k,N)
 
->>>>>>> 812813bceb51f5c23e4a8c58acb96c3688e26513
+bool_operation=generate_evolution_table()
 
 state_space = nx.DiGraph()
+    
+#for i in range(N):
+#    state_space.add_node(i)
 
-for i in range(N):
-    state_space.add_node(i)
+#state_space_conn=np.array(())
+#for i in range(2**N):
+#    state_space_conn=np.append(state_space_conn, 
+#                               np.random.randint(0, 2**N))
 
-state_space_conn=np.array(())
 for i in range(2**N):
-    state_space_conn=np.append(state_space_conn, 
-                               np.random.randint(0, 2**N))
-
-for i in range(len(state_space_conn)):
-    state_space.add_edge(i,int(state_space_conn[i]))
+    state_space.add_edge(int(i),int(bin_to_int(N,return_sequence(G,int_to_bin(N,i),
+                                                        bool_operation))))
 
 graph = nx.to_pydot(state_space)
 graph.write_png('test1.png')
