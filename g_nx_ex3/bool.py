@@ -1,25 +1,85 @@
-############################ Ulrich & Daniel, Guilherme & Florian (2013) ######
+############################ Ulrich & Daniel, Guilherme & Florian (2013) #######
 
 import numpy as np
 import networkx as nx
-import random as rd
 import matplotlib.pyplot as plt
-import copy
 from pylab import *
-import pydot
 
-N = 10     #number of nodes
-k = 2           # number of connections
+
+# integer-binary conversion:
+def cbin(size, n):
+    v = [0] * size                      # initialze list with length 'size'
+    for i in range(len(bin(n)) - 2):    # -2 removes 0bxxxxxx
+        v[i] = int(bin(n)[ -i - 1])     # convert string to int and reverse order
+    return v    
+
+# binary-integer conversion:
+def cint(size, v):
+    n = 0
+    for i in range(size):               # add all powers of 2
+        n = n + 2**i * v[i]             # where i_th element of the vector is 1
+    return n
 
 # N x 2**k dimensional array of random outputs
 # first index: node
 # second index: output; index encodes binary input configuration
 def generate_evolution_table():
-    return np.random.random_integers(0,1, size=(N,2**k))
+    t = np.random.random_integers(0,1, size=(N,2**k))
+    return t
 
 # get output of node i with input configuration e_v from table above
-def evolution_table(Table,i,e_v):
-    return Table[i][bin_to_int(k,e_v)]
+def evolution_table(Table, i, e_v):
+    t = Table[i][cint(k, e_v)]
+    return t
+
+def return_sequence(graph,curr_state,Table):
+    v_return=[None]*N
+    for node in range(N):
+        neighbor = graph.neighbors(node)
+        neighbor_state = np.array(())
+        for j in range(k):
+            neighbor_state = np.append(neighbor_state, 
+                                       curr_state[neighbor[j]]
+                                      )
+        v_return[node] = evolution_table(Table, node, neighbor_state)
+    return v_return
+
+
+# -------- main --------- 
+
+N = 10          # number of nodes
+k = 2           # number of connections
+
+G = nx.random_regular_graph(k,N)
+
+bool_operation = generate_evolution_table()
+
+state_space = nx.DiGraph()
+    
+for i in range(2**N):                   # int(i), int(cint) --> i, cint; matters?
+    state_space.add_edge(i, cint(N,                  
+                                 return_sequence(G, cbin(N,i),  
+                                 bool_operation)))
+
+# plot alternative, pydot in comment area: 
+pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
+nx.draw(state_space,pos,with_labels=False,
+        alpha=0.4,node_size=10)
+
+#plt.title('N nodes with k connections')  
+plt.savefig("output.pdf")
+
+
+
+####################################################################################################
+####################################################################################################
+####################################################################################################
+# below removed stuff from this ex
+
+#import copy
+#import random as rd
+#import pydot
+
 
 #def evolution_table_k3(Table,i,E1,E2,E3):
 #   return Table[i][4*E1+2*E2+E3] 
@@ -29,49 +89,6 @@ def evolution_table(Table,i,e_v):
     
 # table=generate_evolution_table(N,k)
 
-#transform integer to binary-array
-def int_to_bin(size,n):
-    # v=np.array([])
-    # tmp=n%2**(i+1)
-    # v=np.append(v,tmp)
-    # n-=tmp*2**i   
-    v=[None]*size
-    for i in range(0,size):
-        if n>=(2**(size-i-1)):
-            v[size-i-1]=1
-            n=n-2**(size-i-1)
-        else:
-            v[size-i-1]=0   
-    return v
-    
-#transform binary-array to integer
-def bin_to_int(size,v):
-    n=0
-    for i in range(0,size):
-        n=n+2**i*v[i]
-    return n    
-
-    
-def return_sequence(graph,curr_state,Table):
-    v_return=[None]*N
-    for node in range(N):
-        neighbor = graph.neighbors(node)
-        neighbor_state=np.array(())
-        for j in range(k):
-            neighbor_state=np.append(neighbor_state,curr_state[neighbor[j]])
-        v_return[node] = evolution_table(Table,node,neighbor_state)
-    return v_return
-
-def plot_graph(graph):
-    nx.draw(graph)
-    show()
-
-G = nx.random_regular_graph(k,N)
-
-bool_operation=generate_evolution_table()
-
-state_space = nx.DiGraph()
-    
 #for i in range(N):
 #    state_space.add_node(i)
 
@@ -80,20 +97,27 @@ state_space = nx.DiGraph()
 #    state_space_conn=np.append(state_space_conn, 
 #                               np.random.randint(0, 2**N))
 
-for i in range(2**N):
-    state_space.add_edge(int(i),int(bin_to_int(N,return_sequence(G,int_to_bin(N,i),
-                                                        bool_operation))))
 
-graph = nx.to_pydot(state_space)
-graph.write_png('test1.png')
+#def plot_graph(graph):
+    #nx.draw(graph)
+    #show()
+
+
+#graph = nx.to_pydot(state_space,pos)
+#graph.write_pdf('output.pdf')
 
 #plot_graph(state_space)
 
 
 
-
-
-
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+####################################################################################################
+# below ex2 as reference
 
 
 
@@ -183,6 +207,7 @@ graph.write_png('test1.png')
 #
 #ax1 = fig.add_subplot(111)
 #ax1.plot(x1, y1, color='red', linewidth=2, label="Kill random nodes")
+## THIS LINE COULD BE DELETING YOUR WHOLE DRIVE... BEWARE =))))
 #ax1.set_title('$\gamma$ = '+ str(gamma))
 #
 #ax2 = fig.add_subplot(111)
