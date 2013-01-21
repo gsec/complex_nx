@@ -23,8 +23,12 @@ def cint(size, v):
 # N x 2**k dimensional array of random outputs
 # first index: node
 # second index: output; index encodes binary input configuration
-def generate_evolution_table():
-    t = np.random.random_integers(0,1, size=(N,2**k))
+def generate_evolution_table(N, k):
+    t = np.random.random_integers(0,1, size=(N, 2**k))
+    return t
+
+def biased_bool(N, k, p):
+    t = (np.random.random(k) < p) * 1
     return t
 
 # get output of node i with input configuration e_v from table above
@@ -32,7 +36,7 @@ def evolution_table(Table, i, e_v):
     t = Table[i][cint(k, e_v)]
     return t
 
-def return_sequence(graph,curr_state,Table):
+def return_sequence(N, k, graph, curr_state, Table):
     v_return=[None]*N
     for node in range(N):
         neighbor = graph.neighbors(node)
@@ -50,16 +54,18 @@ def return_sequence(graph,curr_state,Table):
 N = 10          # number of nodes
 k = 2           # number of connections
 
-G = nx.random_regular_graph(k,N)
+G = nx.random_regular_graph(k, N)
 
-bool_operation = generate_evolution_table()
+bool_operation = generate_evolution_table(N, k)
 
 state_space = nx.DiGraph()
     
 for i in range(2**N):                   # int(i), int(cint) --> i, cint; matters?
     state_space.add_edge(i, cint(N,                  
-                                 return_sequence(G, cbin(N,i),  
-                                 bool_operation)))
+                                 return_sequence(N, k, G, cbin(N,i),
+                                                 bool_operation)
+                                )
+                        )
 
 # plot alternative, pydot in comment area: 
 pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
@@ -67,7 +73,7 @@ nx.draw(state_space,pos,with_labels=False,
         alpha=0.4,node_size=10)
 
 #plt.title('N nodes with k connections')  
-plt.savefig("output.pdf")
+#plt.savefig("output.pdf")
 
 
 
