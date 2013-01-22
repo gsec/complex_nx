@@ -28,7 +28,10 @@ def generate_evolution_table(N, k):
     return t
 
 def biased_bool(N, k, p):
-    t = (np.random.random(k) < p) * 1
+    t = np.array([])
+    for i in range(N):
+        bb = (np.random.random(k) < p) * 1
+        t = np.append(t, bb)
     return t
 
 # get output of node i with input configuration e_v from table above
@@ -72,8 +75,8 @@ pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
 nx.draw(state_space,pos,with_labels=False,
         alpha=0.4,node_size=10)
 
-#plt.title('N nodes with k connections')  
-#plt.savefig("output.pdf")
+plt.title('N nodes with k connections')  
+plt.savefig("output.pdf")
 
 
 
