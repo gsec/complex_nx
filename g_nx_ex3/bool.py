@@ -28,10 +28,11 @@ def generate_evolution_table(N, k):
     return t
 
 def biased_bool(N, k, p):
-    t = np.array([])
+    t = np.empty( (N, 2**k) )
+    #t = [0]*N
     for i in range(N):
-        bb = (np.random.random(k) < p) * 1
-        t = np.append(t, bb)
+        bb = (np.random.random(2**k) < p) * 1
+        t[i] = bb
     return t
 
 # get output of node i with input configuration e_v from table above
@@ -51,32 +52,33 @@ def return_sequence(N, k, graph, curr_state, Table):
         v_return[node] = evolution_table(Table, node, neighbor_state)
     return v_return
 
-
 # -------- main --------- 
 
 N = 10          # number of nodes
 k = 2           # number of connections
 
-G = nx.random_regular_graph(k, N)
+#np.random.seed()
 
-bool_operation = generate_evolution_table(N, k)
-
-state_space = nx.DiGraph()
-    
-for i in range(2**N):                   # int(i), int(cint) --> i, cint; matters?
-    state_space.add_edge(i, cint(N,                  
-                                 return_sequence(N, k, G, cbin(N,i),
-                                                 bool_operation)
-                                )
-                        )
-
-# plot alternative, pydot in comment area: 
-pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
-nx.draw(state_space,pos,with_labels=False,
-        alpha=0.4,node_size=10)
-
-plt.title('N nodes with k connections')  
-plt.savefig("output.pdf")
+#G = nx.random_regular_graph(k, N)
+#
+#bool_operation = generate_evolution_table(N, k)
+#
+#state_space = nx.DiGraph()
+#    
+#for i in range(2**N):                   # int(i), int(cint) --> i, cint; matters?
+#    state_space.add_edge(i, cint(N,                  
+#                                 return_sequence(N, k, G, cbin(N,i),
+#                                                 bool_operation)
+#                                )
+#                        )
+#
+### plot alternative, pydot in comment area: 
+#pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
+#nx.draw(state_space,pos,with_labels=False,
+#        alpha=0.4,node_size=10)
+#
+#plt.title('N nodes with k connections')  
+#plt.savefig("output.pdf")
 
 
 
