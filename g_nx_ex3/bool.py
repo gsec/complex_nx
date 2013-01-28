@@ -28,6 +28,7 @@ def bin2int(v):
         n = n + 2**i * v[i]             # where i_th element of the vector is 1
     return n
 
+#obsolete====
 #def generate_evolution_table(N, k):
     #""" N x 2**k array of random outputs
         #first index: node
