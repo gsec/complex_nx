@@ -5,85 +5,91 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from pylab import *
 
-
-# integer-binary conversion:
-def cbin(size, n):
+def int2bin(size, n):
+    """ Convert an integer n to binary number. Return a list with length 'size'. 
+        Each element of the list contains one binary digit. The lowest power 
+        of 2 corresponds to the first element.
+        Expects two integers, returns list.
+    """
+    assert type(n) == int
+    assert type(size) == int
     v = [0] * size                      # initialze list with length 'size'
     for i in range(len(bin(n)) - 2):    # -2 removes 0bxxxxxx
         v[i] = int(bin(n)[ -i - 1])     # convert string to int and reverse order
     return v    
 
-# binary-integer conversion:
-def cint(size, v):
+def bin2int(v):
+    """ Convert a binary list v into an integer n.
+    """
+    assert type(v) == list
     n = 0
-    for i in range(size):               # add all powers of 2
+    for i in range(len(v)):             # add all powers of 2
+        assert v[i] == 1 or v[i] == 0
         n = n + 2**i * v[i]             # where i_th element of the vector is 1
     return n
 
-# N x 2**k dimensional array of random outputs
-# first index: node
-# second index: output; index encodes binary input configuration
-def generate_evolution_table(N, k):
-    t = np.random.random_integers(0,1, size=(N, 2**k))
-    return t
+#def generate_evolution_table(N, k):
+    #""" N x 2**k array of random outputs
+        #first index: node
+        #second index: output; index encodes binary input configuration
+    #""" 
+    #t = np.random.random_integers(0,1, size=(N, 2**k))
+    #return t
 
 def biased_bool(N, k, p):
-    t = np.empty( (N, 2**k) )
-    for i in range(N):
-        bb = np.random.random(2**k) < p
-        print bb
-        t[i] = bb
-    return t
+    """ Return N x 2**k array of random boolean with bias p.
+    """
+    return (np.random.random((N, 2**k)) < p)*1
 
-# get output of node i with input configuration e_v from table above
-def evolution_table(Table, i, e_v):
-    t = Table[i][cint(k, e_v)]
-    return t
-
-def return_sequence(N, k, graph, curr_state, Table):
-    v_return=[None]*N
-    for node in range(N):
-        neighbor = graph.neighbors(node)
-        neighbor_state = np.array(())
-        for j in range(k):
-            neighbor_state = np.append(neighbor_state, 
-                                       curr_state[neighbor[j]]
-                                      )
-        v_return[node] = evolution_table(Table, node, neighbor_state)
-    return v_return
-
-# -------- main --------- 
-
-N = int(raw_input('Number of nodes: '))
-k = int(raw_input('Number of inputs: '))
-p = float(raw_input('Probability bias: '))
-
-#N = 10          # number of nodes
-#k = 2           # number of connections
-
-np.random.seed()
-
-G = nx.random_regular_graph(k, N)
-
-bool_operation = generate_evolution_table(N, k)
-bool_operation = biased_bool(N, k, p)
-
-state_space = nx.DiGraph()
-    
-for i in range(2**N):                   # int(i), int(cint) --> i, cint; matters?
-    state_space.add_edge(i, cint(N,                  
-				 return_sequence(N, k, G, cbin(N,i),
-						 bool_operation)
-				)
-			)
-
-# plot alternative, pydot in comment area: 
-pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
-nx.draw(state_space,pos,with_labels=False,
-	alpha=0.4,node_size=10)
-
-plt.title('N nodes with k connections')  
-plt.savefig("output.pdf")
+## get output of node i with input configuration e_v from table above
+#def evolution_table(Table, i, e_v):
+#    t = Table[i][bin2int(k, e_v)]
+#    return t
+#
+#def return_sequence(N, k, graph, curr_state, Table):
+#    v_return=[None]*N
+#    for node in range(N):
+#        neighbor = graph.neighbors(node)
+#        neighbor_state = np.array(())
+#        for j in range(k):
+#            neighbor_state = np.append(neighbor_state, 
+#                                       curr_state[neighbor[j]]
+#                                      )
+#        v_return[node] = evolution_table(Table, node, neighbor_state)
+#    return v_return
+#
+## -------- main --------- 
+#
+#N = int(raw_input('Number of nodes: '))
+#k = int(raw_input('Number of inputs: '))
+#p = float(raw_input('Probability bias: '))
+#
+##N = 10          # number of nodes
+##k = 2           # number of connections
+#
+#np.random.seed()
+#
+#G = nx.random_regular_graph(k, N)
+#
+#bool_operation = generate_evolution_table(N, k)
+#bool_operation = biased_bool(N, k, p)
+#
+#state_space = nx.DiGraph()
+#    
+#for i in range(2**N):                   # int(i), int(bin2int) --> i, bin2int; matters?
+#    state_space.add_edge(i, bin2int(N,                  
+#                return_sequence(N, k, G, int2bin(N,i),
+#                        bool_operation)
+#               )
+#           )
+#
+## plot alternative, pydot in comment area: 
+#pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
+#nx.draw(state_space,pos,with_labels=False,
+#   alpha=0.4,node_size=10)
+#
+#plt.title('N nodes with k connections')  
+#plt.savefig("output.pdf")
 
 
 
