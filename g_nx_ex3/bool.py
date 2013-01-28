@@ -29,9 +29,9 @@ def generate_evolution_table(N, k):
 
 def biased_bool(N, k, p):
     t = np.empty( (N, 2**k) )
-    #t = [0]*N
     for i in range(N):
-        bb = (np.random.random(2**k) < p) * 1
+        bb = np.random.random(2**k) < p
+        print bb
         t[i] = bb
     return t
 
@@ -54,31 +54,36 @@ def return_sequence(N, k, graph, curr_state, Table):
 
 # -------- main --------- 
 
-N = 10          # number of nodes
-k = 2           # number of connections
+N = int(raw_input('Number of nodes: '))
+k = int(raw_input('Number of inputs: '))
+p = float(raw_input('Probability bias: '))
 
-#np.random.seed()
+#N = 10          # number of nodes
+#k = 2           # number of connections
 
-#G = nx.random_regular_graph(k, N)
-#
-#bool_operation = generate_evolution_table(N, k)
-#
-#state_space = nx.DiGraph()
-#    
-#for i in range(2**N):                   # int(i), int(cint) --> i, cint; matters?
-#    state_space.add_edge(i, cint(N,                  
-#                                 return_sequence(N, k, G, cbin(N,i),
-#                                                 bool_operation)
-#                                )
-#                        )
-#
-### plot alternative, pydot in comment area: 
-#pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
-#nx.draw(state_space,pos,with_labels=False,
-#        alpha=0.4,node_size=10)
-#
-#plt.title('N nodes with k connections')  
-#plt.savefig("output.pdf")
+np.random.seed()
+
+G = nx.random_regular_graph(k, N)
+
+bool_operation = generate_evolution_table(N, k)
+bool_operation = biased_bool(N, k, p)
+
+state_space = nx.DiGraph()
+    
+for i in range(2**N):                   # int(i), int(cint) --> i, cint; matters?
+    state_space.add_edge(i, cint(N,                  
+				 return_sequence(N, k, G, cbin(N,i),
+						 bool_operation)
+				)
+			)
+
+# plot alternative, pydot in comment area: 
+pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
+nx.draw(state_space,pos,with_labels=False,
+	alpha=0.4,node_size=10)
+
+plt.title('N nodes with k connections')  
+plt.savefig("output.pdf")
 
 
 
