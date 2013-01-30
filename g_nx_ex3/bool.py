@@ -9,7 +9,7 @@ def int2bin(size, n):
     """ Convert an integer n to binary number. Return a list with length 'size'. 
         Each element of the list contains one binary digit. The lowest power 
         of 2 corresponds to the first element.
-        Expects two integers, returns list.
+        Expect two integers, return list.
     """
     assert type(n) == int
     assert type(size) == int
@@ -28,6 +28,19 @@ def bin2int(v):
         n = n + 2**i * v[i]             # where i_th element of the vector is 1
     return n
 
+def readVal(valType, reqMsg='Input a value: ', errMsg='Wrong type, try again.'):
+    """ Return 'value' if it is of the requested type 'valType',
+        else try again. Optional: reqMsg and errMsg.
+    """
+    while True:
+        value = raw_input(reqMsg)
+        try:
+            value = valType(value)
+            return value
+        except:
+            print(errMsg)
+
+
 #obsolete====
 #def generate_evolution_table(N, k):
     #""" N x 2**k array of random outputs
@@ -42,55 +55,55 @@ def biased_bool(N, k, p):
     """
     return (np.random.random((N, 2**k)) < p)*1
 
-## get output of node i with input configuration e_v from table above
-#def evolution_table(Table, i, e_v):
-#    t = Table[i][bin2int(k, e_v)]
-#    return t
-#
-#def return_sequence(N, k, graph, curr_state, Table):
-#    v_return=[None]*N
-#    for node in range(N):
-#        neighbor = graph.neighbors(node)
-#        neighbor_state = np.array(())
-#        for j in range(k):
-#            neighbor_state = np.append(neighbor_state, 
-#                                       curr_state[neighbor[j]]
-#                                      )
-#        v_return[node] = evolution_table(Table, node, neighbor_state)
-#    return v_return
-#
-## -------- main --------- 
-#
-#N = int(raw_input('Number of nodes: '))
-#k = int(raw_input('Number of inputs: '))
-#p = float(raw_input('Probability bias: '))
-#
-##N = 10          # number of nodes
-##k = 2           # number of connections
-#
-#np.random.seed()
-#
-#G = nx.random_regular_graph(k, N)
-#
+# get output of node i with input configuration e_v from table above
+def evolution_table(Table, i, e_v):
+    t = Table[i][bin2int(k, e_v)]
+    return t
+
+def return_sequence(N, k, graph, curr_state, Table):
+    v_return=[None]*N
+    for node in range(N):
+        neighbor = graph.neighbors(node)
+        neighbor_state = np.array(())
+        for j in range(k):
+            neighbor_state = np.append(neighbor_state, 
+                                       curr_state[neighbor[j]]
+                                      )
+        v_return[node] = evolution_table(Table, node, neighbor_state)
+    return v_return
+
+# -------- main --------- 
+
+N = int(raw_input('Number of nodes: '))
+k = int(raw_input('Number of inputs: '))
+p = float(raw_input('Probability bias: '))
+
+#N = 10          # number of nodes
+#k = 2           # number of connections
+
+np.random.seed()
+
+G = nx.random_regular_graph(k, N)
+
 #bool_operation = generate_evolution_table(N, k)
-#bool_operation = biased_bool(N, k, p)
-#
-#state_space = nx.DiGraph()
-#    
-#for i in range(2**N):                   # int(i), int(bin2int) --> i, bin2int; matters?
-#    state_space.add_edge(i, bin2int(N,                  
-#                return_sequence(N, k, G, int2bin(N,i),
-#                        bool_operation)
-#               )
-#           )
-#
-## plot alternative, pydot in comment area: 
-#pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
-#nx.draw(state_space,pos,with_labels=False,
-#   alpha=0.4,node_size=10)
-#
-#plt.title('N nodes with k connections')  
-#plt.savefig("output.pdf")
+bool_operation = biased_bool(N, k, p)
+
+state_space = nx.DiGraph()
+
+for i in range(2**N):                   # int(i), int(bin2int) --> i, bin2int; matters?
+    state_space.add_edge(i, bin2int(N,
+                return_sequence(N, k, G, int2bin(N,i),
+                        bool_operation)
+               )
+           )
+
+# plot alternative, pydot in comment area:
+pos = nx.graphviz_layout(state_space,prog="twopi",root=0)
+nx.draw(state_space,pos,with_labels=False,
+   alpha=0.4,node_size=10)
+
+plt.title('N nodes with k connections')
+plt.savefig("output.pdf")
 
 
 
