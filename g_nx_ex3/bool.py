@@ -56,8 +56,8 @@ def biased_bool(N, k, p):
     return (np.random.random((N, 2**k)) < p)*1
 
 # get output of node i with input configuration e_v from table above
-def evolution_table(Table, i, e_v):
-    t = Table[i][bin2int(k, e_v)]
+def evolution_table(Table, i,v):
+    t = Table[i][bin2int(v)]
     return t
 
 def return_sequence(N, k, graph, curr_state, Table):
@@ -74,12 +74,13 @@ def return_sequence(N, k, graph, curr_state, Table):
 
 # -------- main --------- 
 
-N = int(raw_input('Number of nodes: '))
-k = int(raw_input('Number of inputs: '))
-p = float(raw_input('Probability bias: '))
+#N = int(raw_input('Number of nodes: '))
+#k = int(raw_input('Number of inputs: '))
+#p = float(raw_input('Probability bias: '))
 
-#N = 10          # number of nodes
-#k = 2           # number of connections
+N = readVal(int,'Number of nodes: ', 'Input must be a positive Integer.')
+k = readVal(int,'Number of inputs: ', 'Input must be a positive Integer.')
+p = readVal(float,'Probability bias: ', 'Input must be a float between 0.0 and 1.0.')
 
 np.random.seed()
 
