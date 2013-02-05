@@ -1,11 +1,10 @@
 complex nX
 ==========
 ______________________________________________________________________________
-ex3-to do:
-* biased probabilities (on branch biased)
-* allow outputs independent from input
-* output fixpoint and attractor
-* make LONGEST attractor (algorithm ‽)
+to do:
+* speed up calculation
+* find suitable grow function for beta
+* visualize
 
 ______________________________________________________________________________
 
