@@ -1,74 +1,70 @@
+############### Complex NX Session 4 *Uli*Gui*Dani*Flo* ###############
+
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from pylab import *
-import operator as op
-import sys, select
-
-def Q(Matrix,group,karate):
-	q=0	
-	for i in range(int(np.max(karate))):
-		for j in range(int(np.max(karate))):
-			if (i!=j):
-				delta = (group[i]==group[j])
-				q=q-(Matrix[i][j]-np.sum(Matrix,axis=0)[i]*np.sum(Matrix,axis=0)[j]/np.sum(Matrix))*delta
-	return q
-
-def generate_graph(karate):
-	"""erzeugt einen Graphen aus Wertepaaren als Kanten"""
-	G = nx.Graph()
-	G.add_edges_from(karate)
-	return G
-
-def generate_groups(karate):
-	group = np.zeros(np.max(karate))
-	group = np.random.randint(2,size=(int(np.max(karate))))
-	return group
-	
-def generate_new_group(group):
-	for i in range(2):
-		z= np.random.randint((np.max(karate)))
-		new_group=group.copy()
-		if group[z]==0:
-			new_group[z]=1
-		elif group[z]==1:
-			new_group[z]=0		
-	return new_group
-	
-def Adj(karate):
-	Adj=np.zeros(shape=(int(np.max(karate)),int(np.max(karate))))
-	for i in range(len(karate)):
-		Adj[karate[i][0]-1][karate[i][1]-1]=1
-		Adj[karate[i][1]-1][karate[i][0]-1]=1
-	return Adj
-
-karate = np.loadtxt('karate.txt')
-G = generate_graph(karate)
-group = generate_groups(karate)
-Matrix=Adj(karate)
-
-# --- update --- 
-betta = 0.01
-Q_alt=Q(Matrix,group,karate)
-for i in range(1000):
-	new_group=generate_new_group(group)	
-	Q_neu=Q(Matrix,new_group,karate)
-	z = np.random.random()
-	# print "z", z
-	# print "Q_alt", Q_alt
-	# print "Q_neu", Q_neu
-	# print "prob", 1/(1+np.exp(-betta*(Q_alt-Q_neu)))
-	# print "exp", np.exp(-betta*(Q_alt-Q_neu))
-	# print ""
-	if z < 1/(1+np.exp(-betta*(Q_alt-Q_neu))):
-		group=new_group.copy()
-		Q_alt=Q_neu.copy()
-	betta = betta*1.01
-	print("qneu", Q_alt, "  betta: ", betta)
-
-print Q(Matrix,group,karate)
-
-	
 
 
-# print(np.zeros(np.max(karate)))
+def Q(A, group, input, parts):
+    """ Evaluate q in dependance of the group correlation in
+        the matrix.
+    """
+    q = 0 
+    for i in range(parts):
+        for j in range(parts):
+            if i!=j :
+                delta = group[i] == group[j]
+                q = q - (A[i][j] - 
+                         np.sum(A,axis=0)[i] * np.sum(A,axis=0)[j]
+                         /np.sum(A)) * delta
+    return q
+
+def switch_groop(group):
+    for i in range(2):
+        z = np.random.randint(parts)
+        new_group = group.copy()
+        if group[z] == 0:
+            new_group[z] = 1
+        elif group[z] == 1:
+            new_group[z] = 0      
+    return new_group
+    
+def matrix(input, parts):
+    matrix = np.zeros(shape = (parts, parts))
+    for i in range(len(input)):
+        matrix[input[i][0]-1][input[i][1]-1] = 1
+        matrix[input[i][1]-1][input[i][0]-1] = 1
+    return matrix
+
+
+# ========== MAIN ============
+
+# --- init ---
+input = np.loadtxt('karate.txt')
+parts = int(np.max(input))
+group = np.random.randint(2, size=parts )
+A = matrix(input, parts)
+eps = 1.002
+
+Beta = 1 + 0.1*np.random.random()
+counter = 0
+Q_old = Q(A, group, input, parts)
+
+# --- update ---
+while Beta < 1E5:
+    counter += 1
+    new_group = switch_groop(group) 
+    Q_new = Q(A,new_group,input, parts)
+    z = np.random.random()
+
+    if z < 1/( 1 + np.exp(-Beta * (Q_old-Q_new)) ):
+        group = new_group.copy()
+        Q_old = Q_new.copy()
+    Beta = Beta**eps * eps**Beta        # chosen temperature funktion
+
+    print 'Relaxing Q: ',  Q_old, '    ', ' Temperature: ', 1/Beta
+
+# --- output ---
+print 
+print 'Extremal Q: ', Q_old 
+print 'Iterations: ', counter
