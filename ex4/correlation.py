@@ -19,41 +19,6 @@ def Q(A, group, input, parts):
                          /np.sum(A)) * Delta
     return q
 
-def switch_groop(group, num=1):
-    """ Flips 'num'(default=1) random bits of a list. 
-    """
-    for i in range(num):
-        new_group = group.copy()
-        z = np.random.randint(len(group))
-        if group[z] == 0:
-            new_group[z] = 1
-        elif group[z] == 1:
-            new_group[z] = 0
-    return new_group
-
-#########################################################################
-#import numpy as np
-#import networkx as nx
-#import matplotlib.pyplot as plt
-#import operator as op
-#import sys, select
-
-#def Q(Matrix,group,karate):
-    #q=0    
-    #for i in range(int(np.max(karate))):
-        #for j in range(int(np.max(karate))):
-            #if (i!=j):
-                #Delta = (group[i]==group[j])
-                #q=q-(Matrix[i][j]-np.sum(Matrix,axis=0)[i]*np.sum(Matrix,axis=0)[j]/np.sum(Matrix))*Delta
-    #return q
-
-
-#def generate_graph(input):
-    #"""erzeugt einen Graphen aus Wertepaaren als Kanten"""
-    #G = nx.Graph()
-    #G.add_edges_from(input)
-    #return G
-
 def generate_groups(input,dim):
     group = np.zeros(parts)
     group = np.random.randint(dim,size=parts)
@@ -135,59 +100,47 @@ def plot(Adj_ordered):
 ############ MAIN ############
 
 # --- init ---
-#input = np.loadtxt('karate.txt')
-#group = np.random.randint(2, size=parts )   # random group assignment
-#A = matrix(input, parts)
-#eps = 1.102                                 # changerate of beta
-
-#Beta = 1 + 0.1*np.random.random()
-#counter = 0
-#Q_old = Q(A, group, input, parts)
-
-
-dim = 4
+# number of groups; rather too many then too few
+dim = 3                                     
 input = np.loadtxt('karate.txt')
-parts = int(np.max(input))                  # highest node value
-#G = generate_graph(input)
+# parts specifies how many elements there are in general
+# here it is the highest node value
+parts = int(np.max(input))                 
+counter = 0                             
+kB = 1E-19           # scaling factor
+
 group = generate_groups(input,dim)
 Matrix=Adj(input)
-iteration = 1000
-#eps = 0.02
-eps = 1.002                                 # changerate of beta
-counter = 0
-Beta = 1.0 #+ 0.1*np.random.random()
+
+# SPecification of beta, set 'eps' to 1.002 for faster change
+# but less likely to be in equillibrium
+noise = 0.01*np.random.random()
+eps = 1.02                            
+Beta = 1. + noise
 
 # --- update --- 
-#Beta = 0.01
-Q_alt=Q(Matrix,group,input,parts)
-#for i in range(iteration):
-while Beta < 1E6:
+Q_alt = Q(Matrix, group, input, parts)
+while Beta < 1E80:
     counter += 1
     new_group=generate_new_group(group,dim)
-    print 'g,ng: ', group, new_group
-    if (new_group != group).any():  
-        Q_neu=Q(Matrix,new_group,input,parts)
-        z = np.random.random()
-        # print "z", z
-        # print "Q_alt", Q_alt
-        # print "Q_neu", Q_neu
-        # print "prob", 1/(1+np.exp(-Beta*(Q_alt-Q_neu)))
-        # print "exp", np.exp(-Beta*(Q_alt-Q_neu))
-        # print ""
-        if z < 1/(1+np.exp(-Beta*(Q_alt-Q_neu))):
-            group=new_group.copy()
-            Q_alt=Q_neu.copy()
-        #Beta = Beta+eps
-        Beta = Beta * eps**Beta        # arbitrary temperature function
-        print("qneu", Q_alt, "  Beta: ", Beta)
+    #print 'g,ng: ', group, new_group
+    #if (new_group != group).any():  
+    Q_neu=Q(Matrix,new_group,input,parts)
+    z = np.random.random()
+    if z < 1/(1+np.exp(-Beta*(Q_alt-Q_neu))):
+        group=new_group.copy()
+        Q_alt=Q_neu.copy()
+    Beta = Beta ** eps#**Beta        # arbitrary temperature function
+    print"Q: ", Q_alt, " Temperature: ", 1/(Beta*kB)
 
-print Q(Matrix,group,input,parts)
 
 ordered_Matrix = Adj_order(swap_order(group,input,dim),Matrix)
 original_matrix = np.asarray(Adj(input))
+
+# ---- output -----
+print 
+print 'Extremal Q: ', Q_alt
+print 'Iterations: ', counter
+
 #plot(original_matrix)
 plot(ordered_Matrix)
-
-
-# print(np.zeros(parts))
-print 'Iterations: ', counter
