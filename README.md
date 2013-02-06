@@ -2,9 +2,9 @@ complex nX
 ==========
 ______________________________________________________________________________
 to do:
-* speed up calculation
+* speed up calculation (✔)
 * find suitable grow function for beta
-* visualize
+* visualize ✔
 
 ______________________________________________________________________________
 
@@ -22,3 +22,15 @@ or <http://www.gnu.org/licenses/gpl.html>.
   easiest as following:
     * sudo apt-get install python-setuptools
     * sudo easy_install pydot
+
+==============================================================
+* Excercise 1:
+	- cluster
+* Excercise 2:
+	- Exploring network behaviour under random/specific
+	node removal
+* Excercise 3:
+	- Exploring the state space and attractors of boolean
+	networks (see Stuart Kauffman)
+* Excercise 4:
+	- Visualization of correlations in a given network
